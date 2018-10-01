@@ -3,6 +3,9 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const passport = require('passport')
 
+//Load Validation
+const validateProfileInput = require('../../validation/profile')
+
 // Load profile model
 const Profile = require('../../models/Profile')
 // Load User Profile
@@ -34,12 +37,21 @@ router.get(
 )
 
 // @route POST api/profile
-// @desc Create users profile
+// @desc Create or Edit users profile
 // @access Private
 router.post(
   '/',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
+    const {errors, isValid} = validateProfileInput(req.body);
+
+    //Check Validation
+    if(!isValid){
+      //Return any errors with 400 status
+      return res.status(400).json(errors);
+    }
+
+
     // Get fields
     const profileFields = {}
     profileFields.user = req.user.id
@@ -62,7 +74,8 @@ router.post(
     if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin
     if (req.body.instagram) profileFields.social.instagram = req.body.instagram
 
-    Profile.findOne({ user: req.user.id }).then(profile => {
+    Profile.findOne({ user: req.user.id })
+    .then(profile => {
       if (profile) {
         // Update
         Profile.findOneAndUpdate(
@@ -72,7 +85,7 @@ router.post(
           .then(profile=>res.json(profile));
       }else{
         //Check if handle exists
-        Profile.findOne({handle:profileFields.handle})
+        Profile.findOne({handle: profileFields.handle})
         .then(profile =>{
           if(profile){
             errors.handle = 'That profile already exists';
