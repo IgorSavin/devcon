@@ -7,9 +7,9 @@ import { clearCurrentProfile } from '../../actions/profileActions'
 
 class Navbar extends Component {
   onLogoutClick (e) {
-    e.preventDefault();
-    this.props.clearCurrentProfile();
-    this.props.logoutUser();
+    e.preventDefault()
+    this.props.clearCurrentProfile()
+    this.props.logoutUser()
   }
 
   render () {
@@ -17,7 +17,12 @@ class Navbar extends Component {
 
     const authLinks = (
       <ul className="navbar-nav ml-auto">
-       <li className="nav-item">
+        <li className="nav-item">
+          <Link className="nav-link" to="/feed">
+            Post Feed
+          </Link>
+        </li>
+        <li className="nav-item">
           <Link className="nav-link" to="/dashboard">
             Dashboard
           </Link>
@@ -29,7 +34,7 @@ class Navbar extends Component {
             className="nav-link"
           >
             <img
-            className="rounded-circle"
+              className="rounded-circle"
               src={user.avatar}
               alt={user.name}
               style={{ width: '25px', marginRight: '5px' }}
@@ -93,4 +98,6 @@ Navbar.propTypes = {
 const mapStateToProps = state => ({
   auth: state.auth
 })
-export default connect(mapStateToProps, { logoutUser, clearCurrentProfile })(Navbar)
+export default connect(mapStateToProps, { logoutUser, clearCurrentProfile })(
+  Navbar
+)
